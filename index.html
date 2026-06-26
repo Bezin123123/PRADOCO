@@ -129,6 +129,45 @@
   .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
   .toast.err{border-color:var(--hot);color:var(--hot)}
 
+  /* ficha do lead (drawer) */
+  .scrim{position:fixed;inset:0;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:.2s;z-index:60}
+  .scrim.open{opacity:1;pointer-events:auto}
+  .drawer{position:fixed;top:0;right:0;height:100vh;width:min(440px,92vw);background:var(--panel);border-left:1px solid var(--line-2);
+    transform:translateX(100%);transition:transform .24s cubic-bezier(.4,0,.2,1);z-index:61;display:flex;flex-direction:column;overflow:hidden}
+  .drawer.open{transform:translateX(0)}
+  .dh{padding:20px 22px 16px;border-bottom:1px solid var(--line)}
+  .dh .row1{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .dh .han{font-size:19px;font-weight:600;display:flex;align-items:center;gap:10px}
+  .dh .han a{color:var(--ink);text-decoration:none}
+  .dh .han a:hover{color:var(--accent)}
+  .dclose{background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer;line-height:1;padding:4px}
+  .dclose:hover{color:var(--ink)}
+  .dmeta{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+  .dmeta .mtag{font-family:"JetBrains Mono",monospace;font-size:11px;padding:4px 9px;border-radius:6px;border:1px solid var(--line);color:var(--muted)}
+  .dmeta .mtag b{color:var(--ink);font-weight:500}
+  .temp-btns{display:flex;gap:6px;margin-top:14px}
+  .temp-btns button{flex:1;padding:8px;border-radius:8px;border:1px solid var(--line);background:var(--bg-2);color:var(--muted);font:inherit;font-size:11px;cursor:pointer;transition:.12s}
+  .temp-btns button:hover{border-color:var(--line-2)}
+  .temp-btns button.on.h{background:var(--hot-bg);border-color:var(--hot);color:var(--hot)}
+  .temp-btns button.on.w{background:var(--warm-bg);border-color:var(--warm);color:#5fd6c8}
+  .temp-btns button.on.c{background:var(--panel-2);border-color:var(--line-2);color:var(--ink)}
+  .dbody{flex:1;overflow-y:auto;padding:18px 22px}
+  .dsec{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+  .dfield{margin-bottom:18px}
+  .dfield label{display:block;font-size:12px;color:var(--muted);margin-bottom:5px}
+  .dfield select,.dfield input{width:100%;padding:9px 11px;background:var(--bg-2);border:1px solid var(--line);border-radius:8px;color:var(--ink);font:inherit;font-size:13px}
+  .dfield select:focus,.dfield input:focus{outline:none;border-color:var(--accent)}
+  .notes{display:flex;flex-direction:column;gap:9px;margin-bottom:14px}
+  .note{background:var(--bg-2);border:1px solid var(--line);border-radius:9px;padding:10px 12px}
+  .note .meta{font-family:"JetBrains Mono",monospace;font-size:10px;color:var(--muted-2);margin-bottom:4px;display:flex;justify-content:space-between}
+  .note .txt{font-size:13px;color:var(--ink);line-height:1.45;white-space:pre-wrap}
+  .note .del{background:none;border:none;color:var(--muted-2);cursor:pointer;font-size:11px}
+  .note .del:hover{color:var(--hot)}
+  .note-add{display:flex;flex-direction:column;gap:8px}
+  .note-add textarea{width:100%;min-height:70px;resize:vertical;padding:10px 12px;background:var(--bg-2);border:1px solid var(--line);border-radius:9px;color:var(--ink);font:inherit;font-size:13px}
+  .note-add textarea:focus{outline:none;border-color:var(--accent)}
+  .note-empty{color:var(--muted-2);font-size:12px;font-style:italic;padding:6px 0}
+
   @media(max-width:720px){
     .rail{grid-template-columns:repeat(3,1fr)}
     .tcard.mini{display:none}
@@ -191,6 +230,46 @@
   </div>
   <div class="foot" id="foot"></div>
 </div>
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer">
+  <div class="dh">
+    <div class="row1">
+      <div class="han"><span class="temp-dot" id="dDot"></span><a id="dHandle" href="#" target="_blank" rel="noopener">@—</a></div>
+      <button class="dclose" id="dClose">✕</button>
+    </div>
+    <div class="dmeta">
+      <span class="mtag" id="dCat">nicho: —</span>
+      <span class="mtag" id="dSegue">segue: —</span>
+    </div>
+    <div class="temp-btns" id="dTemp">
+      <button data-t="hot" class="h">🔥 quente</button>
+      <button data-t="warm" class="w">🟡 morno</button>
+      <button data-t="cold" class="c">⚪ frio</button>
+    </div>
+  </div>
+  <div class="dbody">
+    <div class="dfield">
+      <label>status</label>
+      <select id="dStatus">
+        <option value="novo">não abordado</option>
+        <option value="abordado">abordado</option>
+        <option value="conversa">em conversa</option>
+        <option value="fechou">fechou</option>
+        <option value="perdido">perdido</option>
+      </select>
+    </div>
+    <div class="dfield"><label>responsável</label><input id="dResp" placeholder="quem cuida deste lead"></div>
+    <div class="dfield"><label>próxima ação</label><input id="dNext" placeholder="o que fazer a seguir"></div>
+    <div class="dfield"><label>data de retorno</label><input id="dRet" type="date"></div>
+
+    <p class="dsec">histórico</p>
+    <div class="notes" id="dNotes"></div>
+    <div class="note-add">
+      <textarea id="dNoteText" placeholder="O que rolou? Ex: liguei, pediu pra chamar segunda…"></textarea>
+      <button class="btn btn-accent" id="dNoteSave">adicionar nota</button>
+    </div>
+  </div>
+</aside>
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -214,21 +293,25 @@ function setConn(state){
 function toast(msg,err){ const t=document.getElementById("toast"); t.textContent=msg; t.className="toast show"+(err?" err":""); setTimeout(()=>t.className="toast",2200); }
 
 async function loadAll(){
-  let all=[], from=0, step=1000;
+  const step=1000;
+  // 1ª leva: mostra na hora (os de maior prioridade vêm primeiro)
+  const {data:first,error}=await sb.from("leads").select("*").order("prioridade",{ascending:false}).order("id",{ascending:true}).range(0,step-1);
+  if(error){ setConn("err"); toast("falha ao carregar: "+error.message,true); return; }
+  DATA=first;
+  document.getElementById("loading").style.display="none";
+  document.getElementById("tbl").style.display="";
+  buildCatFilter(); render(); setConn("on"); subscribe();
+
+  // demais levas: carrega em background e re-renderiza sem travar
+  let from=step;
   while(true){
-    const {data,error}=await sb.from("leads").select("*").order("prioridade",{ascending:false}).range(from,from+step-1);
-    if(error){ setConn("err"); toast("falha ao carregar: "+error.message,true); break; }
-    all=all.concat(data);
+    const {data,error:e2}=await sb.from("leads").select("*").order("prioridade",{ascending:false}).order("id",{ascending:true}).range(from,from+step-1);
+    if(e2||!data||!data.length) break;
+    DATA=DATA.concat(data);
+    buildCatFilter(); render();
     if(data.length<step) break;
     from+=step;
   }
-  DATA=all;
-  document.getElementById("loading").style.display="none";
-  document.getElementById("tbl").style.display="";
-  buildCatFilter();
-  render();
-  setConn("on");
-  subscribe();
 }
 
 function subscribe(){
@@ -312,7 +395,7 @@ function render(){
     const touch=d===null?"—":d===0?"hoje":d===1?"ontem":d+"d";
     const cat=(r.categoria&&r.categoria!=="null")?`<span class="chip">${r.categoria}</span>`:"—";
     return `<tr data-id="${r.id}">
-      <td><div class="handle"><span class="temp-dot d-${t}"></span><a href="${r.url||'https://instagram.com/'+r.handle}" target="_blank" rel="noopener">@${r.handle}</a></div></td>
+      <td><div class="handle"><span class="temp-dot d-${t}"></span><a href="#" onclick="openFicha(${r.id});return false;" style="cursor:pointer">@${r.handle}</a></div></td>
       <td class="cat">${cat}</td>
       <td class="sb">${r.segue_de_volta?'<span title="Pedro segue de volta">↩︎</span>':'<span style="color:var(--muted-2)">·</span>'}</td>
       <td><select class="status-pill st-${r.status}" data-f="status">${Object.entries(STATUS).map(([k,v])=>`<option value="${k}" ${k===r.status?'selected':''}>${v}</option>`).join("")}</select></td>
@@ -360,6 +443,86 @@ document.getElementById("fResp").oninput=()=>{page=0;render()};
 document.getElementById("btnRecent").onclick=()=>{ sortKey="recente"; sortDir=-1; page=0; render(); };
 document.getElementById("btnCsv").onclick=exportCSV;
 document.querySelectorAll("thead th[data-s]").forEach(th=>th.onclick=()=>{const k=th.dataset.s; if(sortKey===k)sortDir*=-1; else{sortKey=k;sortDir=-1;} render();});
+
+/* ---------- ficha do lead ---------- */
+let fichaId=null;
+const tmap={hot:"quente",warm:"morno",cold:"frio"};
+
+async function openFicha(id){
+  const r=DATA.find(x=>x.id===id); if(!r)return;
+  fichaId=id;
+  const t=tempOf(r);
+  document.getElementById("dDot").className="temp-dot d-"+t;
+  const a=document.getElementById("dHandle"); a.textContent="@"+r.handle; a.href=r.url||"https://instagram.com/"+r.handle;
+  document.getElementById("dCat").innerHTML="nicho: <b>"+((r.categoria&&r.categoria!=="null")?r.categoria:"—")+"</b>";
+  document.getElementById("dSegue").innerHTML="segue: <b>"+(r.segue_de_volta?"Pedro segue ↩︎":"não")+"</b>";
+  document.getElementById("dStatus").value=r.status;
+  document.getElementById("dResp").value=r.responsavel||"";
+  document.getElementById("dNext").value=r.proxima_acao||"";
+  document.getElementById("dRet").value=r.data_retorno||"";
+  // marca botão de temperatura ativo
+  document.querySelectorAll("#dTemp button").forEach(b=>b.classList.toggle("on", b.dataset.t===t));
+  document.getElementById("dNotes").innerHTML='<div class="note-empty">carregando…</div>';
+  document.getElementById("scrim").classList.add("open");
+  document.getElementById("drawer").classList.add("open");
+  loadNotes(id);
+}
+function closeFicha(){ fichaId=null; document.getElementById("scrim").classList.remove("open"); document.getElementById("drawer").classList.remove("open"); }
+
+async function loadNotes(id){
+  const {data,error}=await sb.from("lead_notas").select("*").eq("lead_id",id).order("criado_em",{ascending:false});
+  const box=document.getElementById("dNotes");
+  if(error){ box.innerHTML='<div class="note-empty">erro ao carregar notas</div>'; return; }
+  if(!data.length){ box.innerHTML='<div class="note-empty">sem anotações ainda. registre o primeiro contato abaixo.</div>'; return; }
+  box.innerHTML=data.map(n=>{
+    const dt=new Date(n.criado_em).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+    return `<div class="note"><div class="meta"><span>${dt}${n.autor?' · '+n.autor:''}</span><button class="del" onclick="delNote(${n.id})">apagar</button></div><div class="txt">${(n.texto||'').replace(/</g,'&lt;')}</div></div>`;
+  }).join("");
+}
+
+async function saveFichaField(field,val){
+  if(!fichaId)return;
+  const rec=DATA.find(r=>r.id===fichaId); rec[field]=val; rec.ultimo_toque=new Date().toISOString();
+  const {error}=await sb.from("leads").update({[field]:val,ultimo_toque:rec.ultimo_toque}).eq("id",fichaId);
+  if(error)toast("não salvou: "+error.message,true); else { toast("salvo ✓"); render(); }
+}
+
+async function setFichaTemp(t){
+  if(!fichaId)return;
+  const score = t==="hot"?4 : t==="warm"?1 : 0;  // grava prioridade que cai na faixa certa
+  const rec=DATA.find(r=>r.id===fichaId); rec.prioridade=score;
+  document.querySelectorAll("#dTemp button").forEach(b=>b.classList.toggle("on", b.dataset.t===t));
+  document.getElementById("dDot").className="temp-dot d-"+t;
+  const {error}=await sb.from("leads").update({prioridade:score}).eq("id",fichaId);
+  if(error)toast("não salvou: "+error.message,true); else { toast("temperatura: "+tmap[t]); render(); }
+}
+
+async function addNote(){
+  if(!fichaId)return;
+  const ta=document.getElementById("dNoteText"); const txt=ta.value.trim();
+  if(!txt)return;
+  const {error}=await sb.from("lead_notas").insert({lead_id:fichaId,texto:txt});
+  if(error){ toast("nota não salvou: "+error.message,true); return; }
+  ta.value=""; toast("nota adicionada ✓");
+  // marca último toque no lead
+  saveFichaField("proxima_acao", document.getElementById("dNext").value);
+  loadNotes(fichaId);
+}
+async function delNote(nid){
+  const {error}=await sb.from("lead_notas").delete().eq("id",nid);
+  if(error){ toast("não apagou",true); return; }
+  loadNotes(fichaId);
+}
+
+document.getElementById("dClose").onclick=closeFicha;
+document.getElementById("scrim").onclick=closeFicha;
+document.getElementById("dStatus").onchange=e=>saveFichaField("status",e.target.value);
+document.getElementById("dResp").onchange=e=>saveFichaField("responsavel",e.target.value);
+document.getElementById("dNext").onchange=e=>saveFichaField("proxima_acao",e.target.value);
+document.getElementById("dRet").onchange=e=>saveFichaField("data_retorno",e.target.value);
+document.getElementById("dNoteSave").onclick=addNote;
+document.querySelectorAll("#dTemp button").forEach(b=>b.onclick=()=>setFichaTemp(b.dataset.t));
+document.addEventListener("keydown",e=>{ if(e.key==="Escape")closeFicha(); });
 
 setConn("");
 loadAll();
