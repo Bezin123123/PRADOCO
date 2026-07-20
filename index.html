@@ -92,7 +92,7 @@
   /* table */
   .panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
   .tbl-scroll{overflow-x:auto}
-  table{width:100%;border-collapse:collapse;font-size:13px;min-width:880px}
+  table{width:100%;border-collapse:collapse;font-size:13px;min-width:1080px}
   thead th{text-align:left;font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;
     color:var(--muted);font-weight:500;padding:11px 14px;border-bottom:1px solid var(--line);background:var(--bg-2);
     cursor:pointer;user-select:none;white-space:nowrap}
@@ -111,21 +111,31 @@
   .status-pill{appearance:none;border:1px solid var(--line-2);border-radius:7px;padding:6px 26px 6px 12px;font:inherit;font-size:11px;font-weight:600;
     cursor:pointer;color:var(--ink);letter-spacing:.02em;
     background:var(--panel-2) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%237e8794' stroke-width='2.5'><path d='M6 9l6 6 6-6'/></svg>") no-repeat right 8px center}
-  .st-novo{color:var(--muted);background-color:var(--panel-2)}
-  .st-abordado{color:#0c0c0c;background-color:var(--warm);border-color:var(--warm)}
+  .st-analise{color:var(--muted);background-color:var(--panel-2)}
+  .st-contato{color:#0c0c0c;background-color:var(--warm);border-color:var(--warm)}
   .st-conversa{color:#04141a;background-color:var(--turq);border-color:var(--turq)}
-  .st-fechou{color:#03140d;background-color:var(--green);border-color:var(--green);font-weight:700}
+  .st-repescagem{color:#0c0c0c;background-color:var(--hot);border-color:var(--hot)}
+  .st-standby{color:var(--muted);background-color:transparent;border-color:var(--line-2)}
+  .st-qualificado{color:#04191a;background-color:var(--teal);border-color:var(--teal);font-weight:600}
+  .st-convertido{color:#03140d;background-color:var(--green);border-color:var(--green);font-weight:700}
   .st-perdido{color:var(--muted-2);background-color:transparent;border-color:var(--line);text-decoration:line-through}
   /* linha tingida por status */
-  tr[data-st="abordado"]{box-shadow:inset 3px 0 0 var(--warm)}
+  tr[data-st="contato"]{box-shadow:inset 3px 0 0 var(--warm)}
   tr[data-st="conversa"]{box-shadow:inset 3px 0 0 var(--turq);background:rgba(17,191,174,.04)}
-  tr[data-st="fechou"]{box-shadow:inset 3px 0 0 var(--green);background:rgba(4,191,138,.06)}
+  tr[data-st="repescagem"]{box-shadow:inset 3px 0 0 var(--hot)}
+  tr[data-st="standby"]{opacity:.65}
+  tr[data-st="qualificado"]{box-shadow:inset 3px 0 0 var(--teal);background:rgba(18,166,166,.06)}
+  tr[data-st="convertido"]{box-shadow:inset 3px 0 0 var(--green);background:rgba(4,191,138,.06)}
   tr[data-st="perdido"]{opacity:.45}
   .ed{background:transparent;border:1px solid transparent;border-radius:6px;padding:5px 7px;font:inherit;font-size:12px;color:var(--ink);width:100%}
   .ed:hover{background:var(--panel-2)} .ed:focus{outline:none;background:var(--bg-2);border-color:var(--line-2)}
-  .ed.resp{max-width:110px;font-family:"JetBrains Mono",monospace;font-size:11px}
+  .ed.sdr{max-width:110px;font-family:"JetBrains Mono",monospace;font-size:11px}
   .touch{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--muted);white-space:nowrap}
   .touch.stale{color:var(--hot)}
+  .tel{white-space:nowrap;font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--ink);display:flex;align-items:center;gap:6px}
+  .wpp-btn{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:6px;
+    background:rgba(37,211,102,.12);border:1px solid rgba(37,211,102,.35);color:#25D366;font-size:12px;text-decoration:none;cursor:pointer;flex-shrink:0}
+  .wpp-btn:hover{background:rgba(37,211,102,.22)}
 
   .foot{margin-top:14px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;
     font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--muted)}
@@ -213,11 +223,14 @@
     </div>
     <select class="f" id="fStatus">
       <option value="">status: todos</option>
-      <option value="novo">não abordado</option>
-      <option value="abordado">abordado</option>
-      <option value="conversa">em conversa</option>
-      <option value="fechou">fechou</option>
-      <option value="perdido">perdido</option>
+      <option value="analise">Em análise</option>
+      <option value="contato">Primeiro contato</option>
+      <option value="conversa">Em conversa</option>
+      <option value="repescagem">Repescagem</option>
+      <option value="standby">Stand by</option>
+      <option value="qualificado">Qualificado</option>
+      <option value="convertido">Convertido</option>
+      <option value="perdido">Perdido</option>
     </select>
     <select class="f" id="fCat"><option value="">nicho: todos</option></select>
     <select class="f" id="fSegue">
@@ -225,7 +238,12 @@
       <option value="sim">Pedro segue</option>
       <option value="nao">não segue</option>
     </select>
-    <input class="f" id="fResp" placeholder="responsável…" style="max-width:140px">
+    <select class="f" id="fSdr">
+      <option value="">sdr: todos</option>
+      <option value="Henrique">Henrique</option>
+      <option value="Pedro">Pedro</option>
+    </select>
+    <select class="f" id="fOrigem"><option value="">origem: todas</option></select>
     <button class="btn" id="btnRecent">recentes ↓</button>
     <button class="btn" id="btnCsv">exportar csv</button>
   </div>
@@ -235,11 +253,13 @@
       <div class="loading" id="loading"><span class="spin"></span><div>carregando base…</div></div>
       <table id="tbl" style="display:none">
         <thead><tr>
-          <th data-s="temp">temp · seguidor</th>
+          <th data-s="temp">temp · nome</th>
+          <th data-s="telefone">telefone</th>
           <th data-s="categoria">nicho</th>
+          <th data-s="origem">origem</th>
           <th data-s="segue_de_volta">segue</th>
           <th data-s="status">status</th>
-          <th data-s="responsavel">responsável</th>
+          <th data-s="sdr">sdr</th>
           <th data-s="proxima_acao">próxima ação</th>
           <th data-s="ultimo_toque">último toque</th>
         </tr></thead>
@@ -259,6 +279,7 @@
     <div class="dmeta">
       <span class="mtag" id="dCat">nicho: —</span>
       <span class="mtag" id="dSegue">segue: —</span>
+      <span class="mtag" id="dCriado">criado: —</span>
     </div>
     <div class="temp-btns" id="dTemp">
       <button data-t="hot" class="h">🔥 quente</button>
@@ -267,17 +288,40 @@
     </div>
   </div>
   <div class="dbody">
+    <div class="dfield"><label>nome</label><input id="dNome" placeholder="nome do lead"></div>
+    <div class="dfield">
+      <label>telefone</label>
+      <div style="display:flex;gap:8px;align-items:center">
+        <input id="dTel" placeholder="(00) 00000-0000" style="flex:1">
+        <a id="dWpp" class="wpp-btn" href="#" target="_blank" rel="noopener" title="abrir WhatsApp" style="display:none">💬</a>
+      </div>
+    </div>
+    <div class="dfield"><label>email</label><input id="dEmail" placeholder="email do lead"></div>
     <div class="dfield">
       <label>status</label>
       <select id="dStatus">
-        <option value="novo">não abordado</option>
-        <option value="abordado">abordado</option>
-        <option value="conversa">em conversa</option>
-        <option value="fechou">fechou</option>
-        <option value="perdido">perdido</option>
+        <option value="analise">Em análise</option>
+        <option value="contato">Primeiro contato</option>
+        <option value="conversa">Em conversa</option>
+        <option value="repescagem">Repescagem</option>
+        <option value="standby">Stand by</option>
+        <option value="qualificado">Qualificado</option>
+        <option value="convertido">Convertido</option>
+        <option value="perdido">Perdido</option>
       </select>
     </div>
-    <div class="dfield"><label>responsável</label><input id="dResp" placeholder="quem cuida deste lead"></div>
+    <div class="dfield">
+      <label>sdr</label>
+      <select id="dSdr">
+        <option value=""></option>
+        <option value="Henrique">Henrique</option>
+        <option value="Pedro">Pedro</option>
+      </select>
+    </div>
+    <div class="dfield"><label>origem</label><input id="dOrigem" placeholder="ex: meta ads, indicação…"></div>
+    <div class="dfield"><label>campanha</label><input id="dCampanha" placeholder="campanha de origem"></div>
+    <div class="dfield"><label>formulário</label><input id="dFormulario" placeholder="formulário de origem"></div>
+    <div class="dfield"><label>meta lead id</label><input id="dMetaLeadId" placeholder="id do lead ads (meta)"></div>
     <div class="dfield"><label>próxima ação</label><input id="dNext" placeholder="o que fazer a seguir"></div>
     <div class="dfield"><label>data de retorno</label><input id="dRet" type="date"></div>
 
@@ -297,13 +341,16 @@ const SUPABASE_URL="https://avitrcjknuphgdgzlmen.supabase.co";
 const SUPABASE_ANON="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF2aXRyY2prbnVwaGdkZ3psbWVuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI0NjI4MjEsImV4cCI6MjA5ODAzODgyMX0.R7GLAiNMXv76mpti8_Ftwr6DqL3JbLUiwC74PmPFNBw";
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
-const STATUS={novo:"não abordado",abordado:"abordado",conversa:"em conversa",fechou:"fechou",perdido:"perdido"};
+const STATUS={analise:"Em análise",contato:"Primeiro contato",conversa:"Em conversa",repescagem:"Repescagem",standby:"Stand by",qualificado:"Qualificado",convertido:"Convertido",perdido:"Perdido"};
 let DATA=[], view=[], page=0; const PER=60;
 let sortKey="temp", sortDir=-1, activeTemp="", activeStatus="", onlyReturns=false;
 let baseFullyLoaded=false;
 
 function tempOf(r){ const p=r.prioridade||0; return p>=3?"hot":p>=1?"warm":"cold"; }
 function tempRank(r){ return {hot:2,warm:1,cold:0}[tempOf(r)]; }
+function esc(s){ return (s==null?'':String(s)).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function cleanPhone(v){ let d=(v||"").replace(/\D/g,""); if(d.startsWith("55")) d=d.slice(2); return d; }
+function wppUrl(v){ const d=cleanPhone(v); return d ? "https://wa.me/55"+d : ""; }
 
 function setConn(state){
   const led=document.getElementById("led"), txt=document.getElementById("connTxt");
@@ -320,7 +367,7 @@ async function loadAll(){
   DATA=first;
   document.getElementById("loading").style.display="none";
   document.getElementById("tbl").style.display="";
-  buildCatFilter(); render(); setConn("on"); subscribe();
+  buildCatFilter(); buildOrigemFilter(); render(); setConn("on"); subscribe();
 
   // demais levas: acumula tudo em silêncio e só re-renderiza UMA vez no fim
   let from=step, loadedMore=false;
@@ -333,6 +380,7 @@ async function loadAll(){
   }
   if(loadedMore){
     buildCatFilter();
+    buildOrigemFilter();
     render();            // um único render final com a base completa
     toast("base completa: "+DATA.length.toLocaleString('pt-BR')+" leads");
   }
@@ -350,7 +398,7 @@ function subscribe(){
     if(tr){
       const sel=tr.querySelector('select[data-f="status"]');
       if(sel && sel.value!==payload.new.status){ sel.value=payload.new.status; sel.className="status-pill st-"+payload.new.status; tr.setAttribute("data-st",payload.new.status); }
-      const resp=tr.querySelector('input[data-f="responsavel"]'); if(resp && document.activeElement!==resp) resp.value=payload.new.responsavel||"";
+      const sdr=tr.querySelector('select[data-f="sdr"]'); if(sdr && document.activeElement!==sdr) sdr.value=payload.new.sdr||"";
       const nx=tr.querySelector('input[data-f="proxima_acao"]'); if(nx && document.activeElement!==nx) nx.value=payload.new.proxima_acao||"";
     }
     // atualiza os números do topo com debounce (evita rajada de re-render)
@@ -364,20 +412,25 @@ function buildCatFilter(){
   document.getElementById("fCat").innerHTML='<option value="">nicho: todos</option>'+cats.map(c=>`<option>${c}</option>`).join("");
 }
 
+function buildOrigemFilter(){
+  const origens=[...new Set(DATA.map(r=>r.origem).filter(o=>o&&o!=="null"))].sort();
+  document.getElementById("fOrigem").innerHTML='<option value="">origem: todas</option>'+origens.map(o=>`<option>${esc(o)}</option>`).join("");
+}
+
 function renderRail(){
-  const c={total:DATA.length,hot:0,warm:0,cold:0,abordado:0,conversa:0,fechou:0};
-  // progresso: quantos de cada temperatura já saíram de "novo"
+  const c={total:DATA.length,hot:0,warm:0,cold:0,contato:0,conversa:0,convertido:0};
+  // progresso: quantos de cada temperatura já saíram de "análise"
   const worked={hot:0,warm:0,cold:0};
-  DATA.forEach(r=>{ const t=tempOf(r); c[t]++; if(r.status!=="novo")worked[t]++; if(r.status==="abordado")c.abordado++; if(r.status==="conversa")c.conversa++; if(r.status==="fechou")c.fechou++; });
+  DATA.forEach(r=>{ const t=tempOf(r); c[t]++; if(r.status!=="analise")worked[t]++; if(r.status==="contato")c.contato++; if(r.status==="conversa")c.conversa++; if(r.status==="convertido")c.convertido++; });
   const pc=n=>DATA.length?Math.round(n*100/DATA.length)+"%":"0%";
   const prog=(t)=>{ const tot=c[t]||1; return Math.round(worked[t]*100/tot); };
   const cards=[
     {k:"hot",cls:"t-hot",ico:"🔥",n:c.hot,l:"quentes",pct:pc(c.hot),kind:"temp",pr:prog("hot"),wk:worked.hot},
     {k:"warm",cls:"t-warm",ico:"🟡",n:c.warm,l:"mornos",pct:pc(c.warm),kind:"temp",pr:prog("warm"),wk:worked.warm},
     {k:"cold",cls:"t-cold",ico:"⚪",n:c.cold,l:"frios",pct:pc(c.cold),kind:"temp",pr:prog("cold"),wk:worked.cold},
-    {k:"abordado",cls:"mini",ico:"",n:c.abordado,l:"abordados",pct:"",kind:"status"},
+    {k:"contato",cls:"mini",ico:"",n:c.contato,l:"contato feito",pct:"",kind:"status"},
     {k:"conversa",cls:"mini",ico:"",n:c.conversa,l:"em conversa",pct:"",kind:"status"},
-    {k:"fechou",cls:"mini t-done",ico:"",n:c.fechou,l:"fechou",pct:"",kind:"status"},
+    {k:"convertido",cls:"mini t-done",ico:"",n:c.convertido,l:"convertido",pct:"",kind:"status"},
   ];
   document.getElementById("rail").innerHTML=cards.map(x=>{
     const on = x.kind==="temp" ? activeTemp===x.k : activeStatus===x.k;
@@ -403,16 +456,18 @@ function computeView(){
   const fs=document.getElementById("fStatus").value || activeStatus;
   const fc=document.getElementById("fCat").value;
   const fseg=document.getElementById("fSegue").value;
-  const fr=document.getElementById("fResp").value.trim().toLowerCase();
+  const fSdr=document.getElementById("fSdr").value;
+  const fOrigem=document.getElementById("fOrigem").value;
   view=DATA.filter(r=>{
     if(activeTemp && tempOf(r)!==activeTemp) return false;
-    if(q && !r.handle.toLowerCase().includes(q)) return false;
+    if(q && !(r.handle.toLowerCase().includes(q) || (r.nome||"").toLowerCase().includes(q))) return false;
     if(fs && r.status!==fs) return false;
     if(fc && r.categoria!==fc) return false;
     if(fseg==="sim" && !r.segue_de_volta) return false;
     if(fseg==="nao" && r.segue_de_volta) return false;
-    if(fr && !(r.responsavel||"").toLowerCase().includes(fr)) return false;
-    if(onlyReturns){ if(!r.data_retorno) return false; if(r.data_retorno>todayStr()) return false; if(r.status==="fechou"||r.status==="perdido") return false; }
+    if(fSdr && r.sdr!==fSdr) return false;
+    if(fOrigem && r.origem!==fOrigem) return false;
+    if(onlyReturns){ if(!r.data_retorno) return false; if(r.data_retorno>todayStr()) return false; if(r.status==="convertido"||r.status==="perdido") return false; }
     return true;
   });
   view.sort((a,b)=>{
@@ -432,7 +487,7 @@ function todayStr(){ const d=new Date(); return d.getFullYear()+"-"+String(d.get
 
 function renderRetBanner(){
   const t=todayStr();
-  const due=DATA.filter(r=>r.data_retorno && r.data_retorno<=t && r.status!=="fechou" && r.status!=="perdido");
+  const due=DATA.filter(r=>r.data_retorno && r.data_retorno<=t && r.status!=="convertido" && r.status!=="perdido");
   const el=document.getElementById("retbanner");
   if(!due.length){ el.style.display="none"; return; }
   el.style.display="flex";
@@ -447,15 +502,22 @@ function render(){
   const start=page*PER, slice=view.slice(start,start+PER);
   document.getElementById("rows").innerHTML=slice.map(r=>{
     const t=tempOf(r), d=daysSince(r.ultimo_toque);
-    const stale=(r.status==="abordado"||r.status==="conversa")&&d!==null&&d>=5;
+    const stale=(r.status==="contato"||r.status==="conversa")&&d!==null&&d>=5;
     const touch=d===null?"—":d===0?"hoje":d===1?"ontem":d+"d";
     const cat=(r.categoria&&r.categoria!=="null")?`<span class="chip">${r.categoria}</span>`:"—";
+    const tel=r.telefone?`<span>${esc(r.telefone)}</span><a class="wpp-btn" href="${wppUrl(r.telefone)}" target="_blank" rel="noopener" title="abrir WhatsApp" onclick="event.stopPropagation()">💬</a>`:"—";
     return `<tr data-id="${r.id}" data-st="${r.status}">
-      <td><div class="handle"><span class="temp-dot d-${t}"></span><a href="#" onclick="openFicha(${r.id});return false;" style="cursor:pointer">@${r.handle}</a></div></td>
+      <td><div class="handle"><span class="temp-dot d-${t}"></span><a href="#" onclick="openFicha(${r.id});return false;" style="cursor:pointer">${r.nome?esc(r.nome):'@'+esc(r.handle)}</a></div></td>
+      <td class="tel">${tel}</td>
       <td class="cat">${cat}</td>
+      <td class="cat">${r.origem?esc(r.origem):'—'}</td>
       <td class="sb">${r.segue_de_volta?'<span title="Pedro segue de volta">↩︎</span>':'<span style="color:var(--muted-2)">·</span>'}</td>
       <td><select class="status-pill st-${r.status}" data-f="status">${Object.entries(STATUS).map(([k,v])=>`<option value="${k}" ${k===r.status?'selected':''}>${v}</option>`).join("")}</select></td>
-      <td><input class="ed resp" data-f="responsavel" value="${r.responsavel||''}" placeholder="—"></td>
+      <td><select class="ed sdr" data-f="sdr">
+        <option value="" ${!r.sdr?'selected':''}></option>
+        <option value="Henrique" ${r.sdr==="Henrique"?'selected':''}>Henrique</option>
+        <option value="Pedro" ${r.sdr==="Pedro"?'selected':''}>Pedro</option>
+      </select></td>
       <td><input class="ed" data-f="proxima_acao" value="${r.proxima_acao||''}" placeholder="—"></td>
       <td class="touch ${stale?'stale':''}">${touch}${stale?' ⚠':''}</td>
     </tr>`;
@@ -481,12 +543,12 @@ function render(){
 }
 
 function exportCSV(){
-  const head=["handle","temp","categoria","segue_de_volta","status","responsavel","proxima_acao","ultimo_toque"];
+  const head=["handle","nome","telefone","temp","categoria","origem","segue_de_volta","status","sdr","proxima_acao","ultimo_toque"];
   const tmap={hot:"quente",warm:"morno",cold:"frio"};
   const lines=[head.join(",")];
   view.forEach(r=>{
     const d=r.ultimo_toque?new Date(r.ultimo_toque).toLocaleDateString('pt-BR'):"";
-    lines.push([r.handle,tmap[tempOf(r)],r.categoria||"",r.segue_de_volta?"sim":"não",STATUS[r.status],r.responsavel||"",(r.proxima_acao||"").replace(/,/g,";"),d].map(c=>`"${(c+"").replace(/"/g,'""')}"`).join(","));
+    lines.push([r.handle,r.nome||"",r.telefone||"",tmap[tempOf(r)],r.categoria||"",r.origem||"",r.segue_de_volta?"sim":"não",STATUS[r.status],r.sdr||"",(r.proxima_acao||"").replace(/,/g,";"),d].map(c=>`"${(c+"").replace(/"/g,'""')}"`).join(","));
   });
   const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([lines.join("\n")],{type:"text/csv"})); a.download="esteira_export.csv"; a.click();
   toast("csv exportado ✓");
@@ -496,7 +558,8 @@ document.getElementById("q").oninput=()=>{page=0;render()};
 document.getElementById("fStatus").onchange=()=>{activeStatus="";page=0;render()};
 document.getElementById("fCat").onchange=()=>{page=0;render()};
 document.getElementById("fSegue").onchange=()=>{page=0;render()};
-document.getElementById("fResp").oninput=()=>{page=0;render()};
+document.getElementById("fSdr").onchange=()=>{page=0;render()};
+document.getElementById("fOrigem").onchange=()=>{page=0;render()};
 document.getElementById("btnRecent").onclick=()=>{ sortKey="recente"; sortDir=-1; page=0; render(); };
 document.getElementById("btnCsv").onclick=exportCSV;
 document.querySelectorAll("thead th[data-s]").forEach(th=>th.onclick=()=>{const k=th.dataset.s; if(sortKey===k)sortDir*=-1; else{sortKey=k;sortDir=-1;} render();});
@@ -510,11 +573,21 @@ async function openFicha(id){
   fichaId=id;
   const t=tempOf(r);
   document.getElementById("dDot").className="temp-dot d-"+t;
-  const a=document.getElementById("dHandle"); a.textContent="@"+r.handle; a.href=r.url||"https://instagram.com/"+r.handle;
+  const a=document.getElementById("dHandle"); a.textContent=r.nome||("@"+r.handle); a.href=r.url||"https://instagram.com/"+r.handle;
   document.getElementById("dCat").innerHTML="nicho: <b>"+((r.categoria&&r.categoria!=="null")?r.categoria:"—")+"</b>";
   document.getElementById("dSegue").innerHTML="segue: <b>"+(r.segue_de_volta?"Pedro segue ↩︎":"não")+"</b>";
+  document.getElementById("dCriado").innerHTML="criado: <b>"+(r.criado_em?new Date(r.criado_em).toLocaleDateString('pt-BR'):"—")+"</b>";
+  document.getElementById("dNome").value=r.nome||"";
+  document.getElementById("dTel").value=r.telefone||"";
+  const wpp=document.getElementById("dWpp");
+  if(r.telefone){ wpp.href=wppUrl(r.telefone); wpp.style.display=""; } else { wpp.style.display="none"; }
+  document.getElementById("dEmail").value=r.email||"";
   document.getElementById("dStatus").value=r.status;
-  document.getElementById("dResp").value=r.responsavel||"";
+  document.getElementById("dSdr").value=r.sdr||"";
+  document.getElementById("dOrigem").value=r.origem||"";
+  document.getElementById("dCampanha").value=r.campanha||"";
+  document.getElementById("dFormulario").value=r.formulario||"";
+  document.getElementById("dMetaLeadId").value=r.meta_lead_id||"";
   document.getElementById("dNext").value=r.proxima_acao||"";
   document.getElementById("dRet").value=r.data_retorno||"";
   // marca botão de temperatura ativo
@@ -574,7 +647,14 @@ async function delNote(nid){
 document.getElementById("dClose").onclick=closeFicha;
 document.getElementById("scrim").onclick=closeFicha;
 document.getElementById("dStatus").onchange=e=>saveFichaField("status",e.target.value);
-document.getElementById("dResp").onchange=e=>saveFichaField("responsavel",e.target.value);
+document.getElementById("dNome").onchange=e=>saveFichaField("nome",e.target.value);
+document.getElementById("dTel").onchange=e=>{ saveFichaField("telefone",e.target.value); const wpp=document.getElementById("dWpp"); if(e.target.value){ wpp.href=wppUrl(e.target.value); wpp.style.display=""; } else { wpp.style.display="none"; } };
+document.getElementById("dEmail").onchange=e=>saveFichaField("email",e.target.value);
+document.getElementById("dSdr").onchange=e=>saveFichaField("sdr",e.target.value);
+document.getElementById("dOrigem").onchange=e=>saveFichaField("origem",e.target.value);
+document.getElementById("dCampanha").onchange=e=>saveFichaField("campanha",e.target.value);
+document.getElementById("dFormulario").onchange=e=>saveFichaField("formulario",e.target.value);
+document.getElementById("dMetaLeadId").onchange=e=>saveFichaField("meta_lead_id",e.target.value);
 document.getElementById("dNext").onchange=e=>saveFichaField("proxima_acao",e.target.value);
 document.getElementById("dRet").onchange=e=>saveFichaField("data_retorno",e.target.value);
 document.getElementById("dNoteSave").onclick=addNote;
