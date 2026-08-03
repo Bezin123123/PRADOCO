@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Respostas — Planejamento | Prado & Co</title>
+<style>
+:root{--tinta:#12211f;--papel:#FBFAF7;--verde:#0F766E;--verde-claro:#E3F0EE;--traco:#DCD9D2;--apagado:#6B7773}
+*{box-sizing:border-box}body{margin:0;background:var(--papel);color:var(--tinta);font-family:Inter,"Segoe UI",sans-serif}
+.wrap{max-width:900px;margin:0 auto;padding:24px 18px 80px}
+h1{font-family:Georgia,serif;font-size:26px;margin:0 0 4px}
+.sub{color:var(--apagado);font-size:14px;margin:0 0 20px}
+.trava{max-width:340px;margin:80px auto;text-align:center}
+.trava input{width:100%;padding:12px;font-size:15px;border:1px solid var(--traco);border-radius:8px;margin:12px 0}
+button{font:inherit;font-size:15px;font-weight:650;padding:11px 18px;border-radius:8px;cursor:pointer;border:1px solid var(--verde);background:var(--verde);color:#fff}
+.barra{display:flex;gap:10px;align-items:center;margin-bottom:16px;flex-wrap:wrap}
+.cont{font-size:14px;color:var(--apagado);margin-right:auto}
+.card{background:#fff;border:1px solid var(--traco);border-radius:10px;padding:16px;margin-bottom:12px}
+.card h3{margin:0 0 8px;font-size:17px}
+.card .linha{font-size:14px;margin:4px 0;white-space:pre-wrap}
+.card .rot{font-weight:650;color:var(--verde)}
+.vazio{text-align:center;color:var(--apagado);padding:50px}
+#painel{display:none}
+</style></head><body>
+<div class="wrap">
+  <div class="trava" id="trava">
+    <h1>Respostas</h1>
+    <p class="sub">Área da Prado</p>
+    <input type="password" id="senha" placeholder="Senha" onkeydown="if(event.key==='Enter')entrar()">
+    <button onclick="entrar()">Entrar</button>
+  </div>
+  <div id="painel">
+    <h1>Respostas do planejamento</h1>
+    <p class="sub">Farmácias que preencheram · atualiza ao abrir</p>
+    <div class="barra">
+      <span class="cont" id="cont">Carregando...</span>
+      <button onclick="carregar()">Atualizar</button>
+      <button onclick="exportar()">Exportar tudo</button>
+    </div>
+    <div id="lista"></div>
+  </div>
+</div>
+<script>
+const SUPA_URL="https://avitrcjknuphgdgzlmen.supabase.co";
+const SUPA_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF2aXRyY2prbnVwaGdkZ3psbWVuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI0NjI4MjEsImV4cCI6MjA5ODAzODgyMX0.R7GLAiNMXv76mpti8_Ftwr6DqL3JbLUiwC74PmPFNBw";
+const SENHA="prado2026";
+let dados=[];
+function entrar(){if(document.getElementById('senha').value===SENHA){document.getElementById('trava').style.display='none';document.getElementById('painel').style.display='block';carregar()}else alert('Senha errada')}
+function carregar(){
+  fetch(SUPA_URL+'/rest/v1/planejamento_farmacia?select=*&order=criado_em.desc',{headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY}})
+  .then(r=>r.json()).then(d=>{dados=d;render()}).catch(_=>{document.getElementById('cont').textContent='Erro ao carregar'});
+}
+function campo(rot,val){return val&&val.trim()?'<div class="linha"><span class="rot">'+rot+':</span>\n'+val+'</div>':''}
+function render(){
+  document.getElementById('cont').textContent=dados.length+' farmácia(s) responderam';
+  const L=document.getElementById('lista');
+  if(!dados.length){L.innerHTML='<div class="vazio">Ninguém preencheu ainda.</div>';return}
+  L.innerHTML=dados.map(d=>'<div class="card"><h3>'+(d.farmacia||'(sem nome)')+'</h3>'+
+    campo('Produtos do mês',d.produtos_mes)+campo('Dia dos Pais',d.dia_dos_pais)+
+    campo('Condição DP',d.dia_pais_condicao)+campo('Ação do mês',d.acao_mes)+
+    campo('Ideia',d.ideia)+campo('Vende bem',d.vende_bem)+
+    campo('Grupo de Ofertas',d.nome_grupo)+campo('WhatsApp',d.whatsapp)+campo('Endereço',d.endereco)+
+    '</div>').join('');
+}
+function exportar(){
+  const t=dados.map(d=>['=== '+(d.farmacia||'?')+' ===',
+    d.produtos_mes?'PRODUTOS: '+d.produtos_mes:'',d.dia_dos_pais?'DIA DOS PAIS: '+d.dia_dos_pais:'',
+    d.dia_pais_condicao?'CONDIÇÃO: '+d.dia_pais_condicao:'',d.acao_mes?'AÇÃO: '+d.acao_mes:'',
+    d.ideia?'IDEIA: '+d.ideia:'',d.vende_bem?'VENDE BEM: '+d.vende_bem:'',
+    d.nome_grupo?'GRUPO: '+d.nome_grupo:'',d.whatsapp?'WHATS: '+d.whatsapp:'',d.endereco?'END: '+d.endereco:''
+  ].filter(x=>x).join('\n')).join('\n\n');
+  if(navigator.clipboard)navigator.clipboard.writeText(t);
+  event.target.textContent='Copiado ✓';setTimeout(()=>event.target.textContent='Exportar tudo',2000);
+}
+</script></body></html>
