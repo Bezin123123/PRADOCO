@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Planejamento do mês — sua farmácia | Prado &amp; Co</title>
+<style>
+  :root{
+    --tinta:#12211f;
+    --papel:#FBFAF7;
+    --verde:#0F766E;
+    --verde-claro:#E3F0EE;
+    --verde-borda:#B9D8D3;
+    --traco:#DCD9D2;
+    --apagado:#6B7773;
+    --destaque:#FDF6E3;
+    --destaque-borda:#EBD9A8;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;background:var(--papel);color:var(--tinta);
+    font-family:"Inter","Segoe UI",-apple-system,BlinkMacSystemFont,Roboto,Helvetica,Arial,sans-serif;
+    font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:720px;margin:0 auto;padding:0 20px 90px}
+
+  header{padding:40px 0 8px}
+  .kicker{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--verde);font-weight:700;margin:0 0 10px}
+  h1{font-family:Georgia,"Times New Roman",serif;font-size:clamp(28px,6vw,38px);line-height:1.1;margin:0 0 12px;font-weight:600;letter-spacing:-.015em}
+  .lede{margin:0;color:var(--apagado);max-width:56ch}
+
+  .campo-mes{margin:22px 0 0;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .campo-mes label{font-size:14px;font-weight:600}
+  .campo-mes input{
+    font:inherit;font-size:15px;padding:8px 12px;border:1px solid var(--traco);
+    border-radius:4px;background:#fff;max-width:220px;
+  }
+
+  h2{font-size:20px;margin:44px 0 4px;font-weight:650;letter-spacing:-.01em;
+     padding-bottom:9px;border-bottom:2px solid var(--tinta)}
+  .explica{margin:12px 0 18px;color:var(--apagado);font-size:14.5px}
+
+  .dica{
+    margin:0 0 20px;padding:14px 16px;background:var(--destaque);
+    border:1px solid var(--destaque-borda);border-left:4px solid #B8860B;
+    border-radius:4px;font-size:14.5px;
+  }
+
+  /* ---- semanas de oferta ---- */
+  .semana{margin:0 0 14px;border:1px solid var(--traco);border-radius:6px;background:#fff;overflow:hidden}
+  .semana > .topo{
+    display:flex;align-items:center;gap:10px;
+    padding:10px 14px;background:#F4F2ED;border-bottom:1px solid var(--traco);
+  }
+  .semana .titulo{font-weight:650;font-size:15px}
+  .semana .sub{font-size:13px;color:var(--apagado);margin-left:auto}
+  .semana textarea{
+    width:100%;border:0;font:inherit;font-size:15px;padding:12px 14px;
+    resize:none;overflow:hidden;min-height:112px;background:#fff;color:var(--tinta);
+  }
+  .semana textarea:focus{outline:none;background:#FDFEFE}
+  .semana.ok{border-color:var(--verde-borda)}
+  .semana.ok > .topo{background:var(--verde-claro);border-color:var(--verde-borda)}
+
+  /* ---- ações ---- */
+  .acao{
+    display:flex;gap:13px;align-items:flex-start;
+    padding:14px;margin:0 0 10px;background:#fff;
+    border:1px solid var(--traco);border-radius:6px;cursor:pointer;
+    transition:border-color .15s,background .15s;
+  }
+  .acao:hover{border-color:#BFC7C4}
+  .acao input[type=checkbox]{width:20px;height:20px;margin:2px 0 0;accent-color:var(--verde);flex:none;cursor:pointer}
+  .acao .txt{flex:1}
+  .acao .nome{font-weight:650;font-size:15.5px;display:block}
+  .acao .desc{font-size:14px;color:var(--apagado);display:block;margin-top:2px}
+  .acao.marcada{background:var(--verde-claro);border-color:var(--verde-borda)}
+  .acao .quando{
+    display:none;margin-top:10px;width:100%;font:inherit;font-size:14.5px;
+    padding:8px 11px;border:1px solid var(--verde-borda);border-radius:4px;background:#fff;
+  }
+  .acao.marcada .quando{display:block}
+  .acao .quando:focus{outline:none;border-color:var(--verde)}
+
+  textarea.livre{
+    width:100%;font:inherit;font-size:15px;padding:12px 14px;background:#fff;
+    border:1px solid var(--traco);border-radius:6px;resize:none;overflow:hidden;min-height:74px;
+  }
+  textarea.livre:focus{outline:none;border-color:var(--verde);box-shadow:0 0 0 3px var(--verde-claro)}
+
+  /* ---- barra ---- */
+  .barra-envio{
+    position:sticky;bottom:0;margin:34px -20px 0;padding:14px 20px;
+    background:rgba(251,250,247,.96);backdrop-filter:blur(6px);
+    border-top:1px solid var(--traco);display:flex;gap:10px;align-items:center;flex-wrap:wrap;
+  }
+  .barra-envio .status{font-size:13.5px;color:var(--apagado);flex:1;min-width:130px}
+  button{
+    font:inherit;font-size:15px;font-weight:650;padding:11px 18px;border-radius:5px;
+    cursor:pointer;border:1px solid var(--verde);background:var(--verde);color:#fff;
+  }
+  button.ghost{background:transparent;color:var(--verde)}
+  button:hover{opacity:.9}
+  button:focus-visible{outline:2px solid var(--tinta);outline-offset:2px}
+
+  footer{margin:26px 0 0;font-size:13.5px;color:var(--apagado)}
+
+  @media (max-width:620px){
+    .semana .sub{margin-left:0;flex-basis:100%}
+    .barra-envio{flex-direction:column;align-items:stretch}
+    .barra-envio button{width:100%}
+  }
+  .selo-data{
+    font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
+    color:#B8860B;background:var(--destaque);border:1px solid var(--destaque-borda);
+    padding:3px 10px;border-radius:20px;vertical-align:middle;margin-left:8px;
+  }
+  .campo-extra{margin:0 0 14px}
+  .campo-extra label{display:block;font-size:14px;font-weight:600;margin:0 0 6px}
+  .campo-extra .op{color:var(--apagado);font-weight:400}
+  .campo-extra input{
+    width:100%;font:inherit;font-size:15px;padding:10px 13px;
+    border:1px solid var(--traco);border-radius:6px;background:#fff;color:var(--tinta);
+  }
+  .campo-extra input:focus{outline:none;border-color:var(--verde);box-shadow:0 0 0 3px var(--verde-claro)}
+  .semana.bloco-pai{border-color:var(--destaque-borda)}
+  .semana.bloco-pai > .topo{background:var(--destaque);border-color:var(--destaque-borda)}
+
+  @media print{.barra-envio{display:none}body{background:#fff}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <img src="data:image/png;base64,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" alt="Prado & Co" style="height:38px;width:auto;display:block;margin:0 0 18px">
+    <h1>Planejamento do mês</h1>
+    <p class="lede">Preencha uma vez só e a gente cuida do resto do mês: roteiro, arte, vídeo e
+    postagem. Leva uns 5 minutos.</p>
+
+    <div class="campo-mes">
+      <label for="farmacia">Farmácia:</label>
+      <input id="farmacia" type="text" placeholder="nome da sua farmácia">
+    </div>
+  </header>
+
+  <h2>1. Os produtos do mês</h2>
+  <p class="explica">Manda todos os produtos que você quer trabalhar esse mês, com o preço. Não precisa
+  separar por semana nem organizar — a gente distribui ao longo do mês e monta as peças pra Stories,
+  Status e Grupo de Ofertas.</p>
+
+  <div class="dica">
+    <b>Se for mais rápido</b>, manda o print do encarte ou a lista do sistema no grupo que a gente
+    tira os produtos daqui. O importante é a gente ter a lista do mês.
+  </div>
+
+  <div class="semana" data-bloco>
+    <div class="topo"><span class="titulo">Produtos e preços</span><span class="sub">um por linha</span></div>
+    <textarea placeholder="Dipirona 500mg — R$ 4,99&#10;Fralda Pompom M — R$ 32,90&#10;Protetor solar — R$ 39,90&#10;..."></textarea>
+  </div>
+
+  <h2>2. Dia dos Pais <span class="selo-data">esse mês</span></h2>
+  <p class="explica">Domingo é Dia dos Pais! Me conta o que você quer trabalhar pra data que a gente
+  monta seu vídeo. Pode ser perfumaria masculina, barbearia, vitamina, kit de presente — o que
+  fizer sentido aí.</p>
+
+  <div class="semana bloco-pai" data-bloco>
+    <div class="topo"><span class="titulo">Produtos de Dia dos Pais</span><span class="sub">com preço</span></div>
+    <textarea placeholder="Perfume Malbec 100ml — R$ 189&#10;Kit barba Bozzano — R$ 39,90&#10;..."></textarea>
+  </div>
+  <div class="campo-extra">
+    <label for="paiCondicao">Tem alguma condição especial pra data? <span class="op">(opcional)</span></label>
+    <input id="paiCondicao" type="text" placeholder="Ex.: brinde na compra, parcela em 3x, entrega até domingo">
+  </div>
+
+  <h2>3. A ação do mês</h2>
+  <p class="explica">Essas são ações que já testamos e funcionam em farmácia. Marque a que fizer
+  sentido pra sua loja — a gente monta toda a divulgação. Se não quiser fazer nenhuma esse mês,
+  é só deixar em branco e seguimos só com as ofertas.</p>
+
+  <label class="acao">
+    <input type="checkbox">
+    <span class="txt">
+      <span class="nome">Dia de aferição de pressão</span>
+      <span class="desc">Você já faz na loja. A gente marca um dia, divulga e vira movimento.</span>
+      <input class="quando" type="text" placeholder="Que dia funciona melhor?">
+    </span>
+  </label>
+
+  <label class="acao">
+    <input type="checkbox">
+    <span class="txt">
+      <span class="nome">Teste de glicemia</span>
+      <span class="desc">Mesma lógica da pressão. Costuma trazer o público mais fiel da farmácia.</span>
+      <input class="quando" type="text" placeholder="Que dia funciona melhor?">
+    </span>
+  </label>
+
+  <label class="acao">
+    <input type="checkbox">
+    <span class="txt">
+      <span class="nome">Café e bolo na loja</span>
+      <span class="desc">Custo baixo e o cliente fica mais tempo dentro da farmácia.</span>
+      <input class="quando" type="text" placeholder="Que dia funciona melhor?">
+    </span>
+  </label>
+
+  <label class="acao">
+    <input type="checkbox">
+    <span class="txt">
+      <span class="nome">Dia do furo de brinco</span>
+      <span class="desc">Traz mãe com criança e movimenta a loja no fim de semana.</span>
+      <input class="quando" type="text" placeholder="Que dia funciona melhor?">
+    </span>
+  </label>
+
+  <label class="acao">
+    <input type="checkbox">
+    <span class="txt">
+      <span class="nome">Data comemorativa do mês</span>
+      <span class="desc">A gente aproveita a data e monta as ofertas em cima dela.</span>
+      <input class="quando" type="text" placeholder="Qual data você quer trabalhar?">
+    </span>
+  </label>
+
+  <label class="acao">
+    <input type="checkbox">
+    <span class="txt">
+      <span class="nome">Aniversário da farmácia</span>
+      <span class="desc">O argumento mais forte que existe: tempo de casa e confiança na cidade.</span>
+      <input class="quando" type="text" placeholder="Qual a data de aniversário?">
+    </span>
+  </label>
+
+  <h2>4. Alguma ideia sua</h2>
+  <p class="explica">Você conhece sua cidade melhor que a gente. Se tiver alguma ação que já deu
+  certo aí, ou algo que você queira testar, escreve aqui.</p>
+  <textarea class="livre" data-bloco placeholder="Ex.: no ano passado a gente fez uma tenda na porta e deu muita gente."></textarea>
+
+  <h2>5. O que está vendendo bem</h2>
+  <p class="explica">Ajuda a gente a escolher melhor os produtos das próximas ofertas. Pode ser
+  categoria mesmo: fralda, dermocosmético, genérico, suplemento.</p>
+  <textarea class="livre" data-bloco placeholder="O que mais sai na sua loja?"></textarea>
+
+  <h2>6. Grupo de Ofertas e Linktree <span class="selo-data">só na primeira vez</span></h2>
+  <p class="explica">Pra gente montar seu Grupo de Ofertas no WhatsApp e o Linktree da sua bio. Se já
+  tá tudo pronto, pode pular.</p>
+  <div class="campo-extra">
+    <label for="nomeGrupo">Como você quer chamar o Grupo de Ofertas?</label>
+    <input id="nomeGrupo" type="text" placeholder="Ex.: Ofertas · nome da farmácia — ou deixa a gente sugerir">
+  </div>
+  <div class="campo-extra">
+    <label for="confWhats">WhatsApp de atendimento <span class="op">(confirma pra gente)</span></label>
+    <input id="confWhats" type="tel" placeholder="(00) 00000-0000">
+  </div>
+  <div class="campo-extra">
+    <label for="confEndereco">Endereço da loja <span class="op">(pro mapa do Linktree)</span></label>
+    <input id="confEndereco" type="text" placeholder="Rua, número, bairro, cidade">
+  </div>
+
+  <div class="barra-envio">
+    <span class="status" id="status">Nada preenchido ainda</span>
+    <button class="ghost" onclick="copiarBackup()">Copiar (backup)</button>
+    <button id="btn" onclick="enviar()">Enviar pra Prado</button>
+  </div>
+
+  <footer>As respostas não ficam salvas se você fechar a página — use o botão acima e cole no
+  grupo do WhatsApp quando terminar.</footer>
+
+</div>
+
+<script>
+(function(){
+  const areas = Array.from(document.querySelectorAll('textarea'));
+  const acoes = Array.from(document.querySelectorAll('.acao'));
+  const status = document.getElementById('status');
+
+  function crescer(t){ t.style.height='auto'; t.style.height=(t.scrollHeight+2)+'px'; }
+
+  function atualizar(){
+    let temProdutos = 0;
+    document.querySelectorAll('.semana').forEach(s => {
+      const ok = s.querySelector('textarea').value.trim().length > 0;
+      s.classList.toggle('ok', ok);
+      if (ok) temProdutos++;
+    });
+    const marcadas = acoes.filter(a => a.querySelector('input[type=checkbox]').checked).length;
+    const partes = [];
+    partes.push(temProdutos ? 'produtos do mês ✓' : 'produtos do mês pendente');
+    partes.push(marcadas === 0 ? 'nenhuma ação marcada'
+      : marcadas + (marcadas === 1 ? ' ação marcada' : ' ações marcadas'));
+    status.textContent = (temProdutos === 0 && marcadas === 0) ? 'Nada preenchido ainda' : partes.join(' · ');
+  }
+
+  areas.forEach(t => { t.addEventListener('input', () => { crescer(t); atualizar(); }); crescer(t); });
+  acoes.forEach(a => {
+    const cb = a.querySelector('input[type=checkbox]');
+    cb.addEventListener('change', () => { a.classList.toggle('marcada', cb.checked); atualizar(); });
+  });
+  atualizar();
+
+  window.enviar = function(){
+    const farm = document.getElementById('farmacia').value.trim();
+    const L = ['PLANEJAMENTO DO MÊS'];
+    if (farm) L.push(farm);
+    L.push('');
+
+    L.push('PRODUTOS DO MÊS');
+    const areasProd = document.querySelectorAll('.semana:not(.bloco-pai) textarea');
+    areasProd.forEach(t => { if (t.value.trim()) L.push(t.value.trim()); });
+    L.push('');
+
+    // Dia dos Pais
+    const paiProd = document.querySelector('.bloco-pai textarea').value.trim();
+    const paiCond = document.getElementById('paiCondicao').value.trim();
+    if (paiProd || paiCond) {
+      L.push('DIA DOS PAIS');
+      if (paiProd) L.push(paiProd);
+      if (paiCond) L.push('Condição: ' + paiCond);
+      L.push('');
+    }
+
+    const marcadas = acoes.filter(a => a.querySelector('input[type=checkbox]').checked);
+    L.push('AÇÃO DO MÊS');
+    if (!marcadas.length) {
+      L.push('Esse mês sem ação — só as ofertas.');
+    } else {
+      marcadas.forEach(a => {
+        const q = a.querySelector('.quando').value.trim();
+        L.push('- ' + a.querySelector('.nome').textContent + (q ? ' (' + q + ')' : ''));
+      });
+    }
+
+    const livres = Array.from(document.querySelectorAll('textarea.livre'));
+    const rotulos = ['IDEIA DA FARMÁCIA', 'O QUE ESTÁ VENDENDO BEM'];
+    livres.forEach((t, i) => {
+      const v = t.value.trim();
+      if (v) { L.push(''); L.push(rotulos[i] + ': ' + v); }
+    });
+
+    // Grupo de Ofertas + Linktree (só primeira vez)
+    const grupo = [
+      ['Nome do Grupo de Ofertas', document.getElementById('nomeGrupo').value.trim()],
+      ['WhatsApp', document.getElementById('confWhats').value.trim()],
+      ['Endereço', document.getElementById('confEndereco').value.trim()],
+    ].filter(d => d[1]);
+    if (grupo.length) {
+      L.push('');
+      L.push('GRUPO DE OFERTAS + LINKTREE');
+      grupo.forEach(d => L.push('- ' + d[0] + ': ' + d[1]));
+    }
+
+    const texto = L.join('\n');
+
+    // ---- envio ao Supabase (principal) + cópia (backup) ----
+    const SUPA_URL = "https://avitrcjknuphgdgzlmen.supabase.co";
+    const SUPA_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF2aXRyY2prbnVwaGdkZ3psbWVuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI0NjI4MjEsImV4cCI6MjA5ODAzODgyMX0.R7GLAiNMXv76mpti8_Ftwr6DqL3JbLUiwC74PmPFNBw";
+    const registro = {
+      farmacia: farm,
+      produtos_mes: (function(){let a=[];document.querySelectorAll('.semana:not(.bloco-pai) textarea').forEach(t=>{if(t.value.trim())a.push(t.value.trim())});return a.join('\n')})(),
+      dia_dos_pais: document.querySelector('.bloco-pai textarea').value.trim(),
+      dia_pais_condicao: document.getElementById('paiCondicao').value.trim(),
+      acao_mes: acoes.filter(a=>a.querySelector('input[type=checkbox]').checked).map(a=>{const q=a.querySelector('.quando').value.trim();return a.querySelector('.nome').textContent+(q?' ('+q+')':'')}).join('; '),
+      ideia: (document.querySelectorAll('textarea.livre')[0]||{}).value ? document.querySelectorAll('textarea.livre')[0].value.trim():'',
+      vende_bem: (document.querySelectorAll('textarea.livre')[1]||{}).value ? document.querySelectorAll('textarea.livre')[1].value.trim():'',
+      nome_grupo: document.getElementById('nomeGrupo').value.trim(),
+      whatsapp: document.getElementById('confWhats').value.trim(),
+      endereco: document.getElementById('confEndereco').value.trim()
+    };
+    const btnE = document.getElementById('btn');
+    btnE.disabled = true; btnE.textContent = 'Enviando...';
+    fetch(SUPA_URL + '/rest/v1/planejamento_farmacia', {
+      method:'POST',
+      headers:{'Content-Type':'application/json','apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,'Prefer':'return-minimal'},
+      body: JSON.stringify(registro)
+    }).then(r=>{
+      if(!r.ok) throw new Error('falha');
+      document.querySelector('.wrap').innerHTML = '<div style="text-align:center;padding:70px 20px"><div style="width:64px;height:64px;border-radius:50%;background:#0F766E;color:#fff;font-size:32px;display:flex;align-items:center;justify-content:center;margin:0 auto 20px">&#10003;</div><h1 style="font-family:Georgia,serif;font-size:26px;margin:0 0 10px">Recebido!</h1><p style="color:#6B7773;font-size:16px">Já tá com a Prado. A gente monta seu material e te devolve no grupo. 💪</p></div>';
+      window.scrollTo(0,0);
+    }).catch(_=>{
+      btnE.disabled=false; btnE.textContent='Enviar pra Prado';
+      alert('Não consegui enviar agora. Use o botão "Copiar" e cole no grupo, por favor.');
+    });
+
+    const btn = document.getElementById('btn');
+    const pronto = () => { btn.textContent = 'Copiado — cole no grupo'; setTimeout(()=>btn.textContent='Enviar pra Prado', 2200); };
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(texto).then(pronto).catch(()=>fallback(texto, pronto));
+    } else { fallback(texto, pronto); }
+  };
+
+  function fallback(texto, pronto){
+    const ta = document.createElement('textarea');
+    ta.value = texto; ta.style.position='fixed'; ta.style.opacity='0';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); pronto(); } catch(e) {}
+    document.body.removeChild(ta);
+  }
+
+  window.copiarBackup = function(){
+    const b=document.getElementById('btn'); const orig=b.onclick; 
+    // reaproveita: monta texto rápido chamando enviar-like copy
+    const farm=document.getElementById('farmacia').value.trim();
+    let L=['PLANEJAMENTO DO MÊS']; if(farm)L.push(farm);
+    document.querySelectorAll('textarea').forEach(t=>{if(t.value.trim())L.push(t.value.trim())});
+    const t=L.join('\n');
+    if(navigator.clipboard)navigator.clipboard.writeText(t);
+    const bb=event.target; bb.textContent='Copiado ✓'; setTimeout(()=>bb.textContent='Copiar (backup)',2000);
+  };
+})();
+</script>
+</body>
+</html>
