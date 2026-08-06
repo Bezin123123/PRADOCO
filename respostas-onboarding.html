@@ -134,43 +134,77 @@
     return f;
   }
 
+  function cidadeCurta(r){ return ou(r.cidade,'[cidade]').split('/')[0].trim(); }
+
+  function parcelaTexto(r){
+    if (!r.parcelamento || r.parcelamento === 'Não parcelamos') return '';
+    return 'Parcelamento em até ' + r.parcelamento + ' sem juros';
+  }
+
+  /* PROMPT pronto pra colar no Claude — sai roteiro (4 cenas) + legenda padrão Prado */
   function briefingRoteiro(r){
     const L = [];
-    L.push('BRIEFING — ROTEIRO INSTITUCIONAL');
-    L.push('Farmácia: ' + ou(r.farmacia));
+    L.push('Escreve o roteiro institucional e a legenda desta farmácia no padrão Prado.');
+    L.push('');
+    L.push('== DADOS DA FARMÁCIA ==');
+    L.push('Nome: ' + ou(r.farmacia));
     L.push('Cidade: ' + ou(r.cidade));
     L.push('Tempo de loja: ' + ou(r.anos_loja));
     L.push('Endereço: ' + ou(r.endereco));
     L.push('WhatsApp: ' + ou(r.whatsapp_atendimento));
     L.push('Instagram: ' + ou(r.instagram));
-    L.push('');
     L.push('Melhor preço em: ' + ou(r.melhor_preco));
     if (r.vende_bem) L.push('Vende bem: ' + r.vende_bem);
     if (r.servicos) L.push('Serviços grátis na loja: ' + r.servicos);
     if (r.diferencial) L.push('Diferencial: ' + r.diferencial);
-    L.push('Entrega: ' + resumoFrete(r) + (r.faz_entrega === 'Sim' && r.raio_entrega ? ' · área: ' + r.raio_entrega : ''));
+    L.push('Entrega: ' + (r.faz_entrega === 'Sim' ? resumoFrete(r) + (r.raio_entrega ? ' — área: ' + r.raio_entrega : '') : 'não faz entrega'));
     L.push('Parcelamento: ' + ou(r.parcelamento));
-    if (r.observacoes) L.push('Observações do cliente: ' + r.observacoes);
+    if (r.observacoes) L.push('Observação do cliente: ' + r.observacoes);
     L.push('');
-    L.push('REGRAS: gancho no padrão "Você de ' + ou(r.cidade,'[cidade]').split('/')[0].trim() + ' sabia que a ' + ou(r.farmacia,'[marca]') + '..." — nunca abrir com produto ou preço. Estrutura de 4 cenas. Não prometer nada que não está listado acima. Traduzir jargão pra linguagem do cliente.');
+    L.push('== REGRAS DO ROTEIRO ==');
+    L.push('- Estrutura de 4 cenas, vídeo vertical 9:16, ~20s, dono ou balconista andando pela loja falando pra câmera.');
+    L.push('- Cena 1 (gancho): abrir SEMPRE com "Você de ' + cidadeCurta(r) + ' sabia que a ' + ou(r.farmacia,'[marca]') + '..." — nunca abrir com produto ou preço.');
+    L.push('- Cena 2: preço/diferenciais. Cena 3: entrega + parcelamento. Cena 4: CTA chamando no WhatsApp.');
+    L.push('- Só usar o que está nos dados acima. Não inventar frete grátis, parcelamento nem promoção que não foi informada.');
+    L.push('- Traduzir jargão pra linguagem do cliente (dermocosmético -> cuidados com a pele).');
+    L.push('- O PDF/entrega pro cliente leva só as cenas e as dicas de gravação, nada de nota interna.');
+    L.push('');
+    L.push('== LEGENDA (padrão Prado, formato checklist) ==');
+    L.push('Monta assim, trocando os dados:');
+    L.push('');
+    L.push('📍 Se você é de ' + cidadeCurta(r) + ', precisa conhecer a ' + ou(r.farmacia,'[farmácia]') + '! 💊');
+    L.push('');
+    L.push('[frase de tradição/atendimento — usar os ' + ou(r.anos_loja,'X anos') + ' de casa] 🤝');
+    L.push('');
+    L.push('Além disso, aqui você tem:');
+    if (r.melhor_preco) L.push('✅ Melhor preço em ' + r.melhor_preco);
+    if (r.servicos) r.servicos.split(',').forEach(sv => { if(sv.trim()) L.push('✅ ' + sv.trim()); });
+    if (parcelaTexto(r)) L.push('✅ ' + parcelaTexto(r));
+    if (r.faz_entrega === 'Sim') L.push('✅ ' + resumoFrete(r) + (r.raio_entrega ? ' (' + r.raio_entrega + ')' : '') + ' 🛵');
+    if (r.diferencial) L.push('✅ ' + r.diferencial);
+    L.push('');
+    L.push('Chame a gente no WhatsApp e faça o seu pedido! 💬❤️');
+    L.push('📲 ' + ou(r.whatsapp_atendimento));
+    L.push('');
+    L.push('#' + ou(r.farmacia,'Farmacia').replace(/[^A-Za-zÀ-ÿ0-9]/g,'') + ' #' + cidadeCurta(r).replace(/[^A-Za-zÀ-ÿ0-9]/g,'') + ' #Farmácia #SuaFarmáciaDeConfiança');
     return L.join('\n');
   }
 
+  /* MENSAGEM curta pro grupo dos designers — só o que entra na arte de entrega */
   function repasseDesigners(r){
     const L = [];
-    L.push('ARTE DE ENTREGA — ' + ou(r.farmacia));
+    L.push('🎨 ARTE DE ENTREGA — ' + ou(r.farmacia));
     L.push('');
-    L.push('Entrega: ' + ou(r.faz_entrega));
     if (r.faz_entrega === 'Sim'){
-      L.push('Condição: ' + resumoFrete(r));
-      L.push('Área de entrega: ' + ou(r.raio_entrega));
-      if (r.motoboy) L.push('Quem entrega: ' + r.motoboy);
+      L.push('Entrega: ' + resumoFrete(r));
+      L.push('Área: ' + ou(r.raio_entrega));
+    } else {
+      L.push('Entrega: não faz');
     }
-    L.push('Parcelamento: ' + ou(r.parcelamento) + (r.parcelamento && r.parcelamento !== 'Não parcelamos' ? ' sem juros' : ''));
-    L.push('');
-    L.push('WhatsApp (pra arte): ' + ou(r.whatsapp_atendimento));
-    L.push('Endereço (pra arte): ' + ou(r.endereco));
-    L.push('Instagram: ' + ou(r.instagram));
+    if (parcelaTexto(r)) L.push('Parcelamento: até ' + r.parcelamento + ' sem juros');
+    L.push('WhatsApp: ' + ou(r.whatsapp_atendimento));
+    L.push('Endereço: ' + ou(r.endereco));
+    L.push('@: ' + ou(r.instagram));
     return L.join('\n');
   }
 
@@ -261,8 +295,8 @@
           '</div>' +
           (r.observacoes ? '<div class="grupo"><h3>Observações</h3>' + linha('Do cliente', r.observacoes) + '</div>' : '') +
           '<div class="botoes">' +
-            '<button onclick="copiar('+i+', \'roteiro\', this)">Copiar briefing do roteiro</button>' +
-            '<button class="claro" onclick="copiar('+i+', \'designers\', this)">Copiar arte de entrega (designers)</button>' +
+            '<button onclick="copiar('+i+', \'roteiro\', this)">Copiar pra fazer o roteiro + legenda</button>' +
+            '<button class="claro" onclick="copiar('+i+', \'designers\', this)">Copiar mensagem pro design</button>' +
           '</div>' +
         '</div>' +
       '</div>'
