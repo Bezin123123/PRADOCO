@@ -79,17 +79,8 @@
     <p class="sub">Respostas do formulário de boas-vindas — pradoco.vercel.app/formulario.html</p>
   </header>
 
-  <!-- LOGIN -->
-  <div class="login" id="telaLogin">
-    <h2>Entrar no painel</h2>
-    <p>Mesma senha do painel de planejamento.</p>
-    <input type="password" id="senha" placeholder="Senha" autocomplete="current-password">
-    <p class="erro-login" id="erroLogin">Senha incorreta. Tenta de novo.</p>
-    <button onclick="entrar()">Entrar</button>
-  </div>
-
   <!-- PAINEL -->
-  <div id="painel" style="display:none">
+  <div id="painel">
     <div class="aviso-topo" id="avisoTopo"></div>
     <div class="ferramentas">
       <input type="search" id="busca" placeholder="Buscar farmácia, cidade ou responsável...">
@@ -105,11 +96,9 @@
 (function(){
   const SUPA_URL = "https://avitrcjknuphgdgzlmen.supabase.co";
   const SUPA_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF2aXRyY2prbnVwaGdkZ3psbWVuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI0NjI4MjEsImV4cCI6MjA5ODAzODgyMX0.R7GLAiNMXv76mpti8_Ftwr6DqL3JbLUiwC74PmPFNBw";
-  const EMAIL_PAINEL = "painel@pradoco.com.br";   /* mesmo usuário do painel de planejamento */
   const TABELA = "onboarding_farmacia";
 
   const $ = id => document.getElementById(id);
-  let token = sessionStorage.getItem('tokenPainel') || '';
   let dados = [];
 
   function esc(t){
@@ -119,34 +108,12 @@
   }
   function ou(v, alt){ return (v && String(v).trim()) ? String(v).trim() : (alt || '—'); }
 
-  /* ---------- login (Supabase Auth, e-mail fixo) ---------- */
-  window.entrar = function(){
-    const senha = $('senha').value;
-    $('erroLogin').style.display = 'none';
-    fetch(SUPA_URL + '/auth/v1/token?grant_type=password', {
-      method:'POST',
-      headers:{'Content-Type':'application/json','apikey':SUPA_KEY},
-      body: JSON.stringify({email: EMAIL_PAINEL, password: senha})
-    }).then(r => r.json()).then(j => {
-      if (!j.access_token) throw new Error('senha');
-      token = j.access_token;
-      sessionStorage.setItem('tokenPainel', token);
-      $('telaLogin').style.display = 'none';
-      $('painel').style.display = 'block';
-      carregar();
-    }).catch(_ => { $('erroLogin').style.display = 'block'; });
-  };
-  $('senha').addEventListener('keydown', e => { if (e.key === 'Enter') entrar(); });
-
   /* ---------- carregar respostas ---------- */
   window.carregar = function(){
     $('avisoTopo').style.display = 'none';
     fetch(SUPA_URL + '/rest/v1/' + TABELA + '?select=*&order=criado_em.desc', {
-      headers:{'apikey':SUPA_KEY, 'Authorization':'Bearer ' + token}
-    }).then(r => {
-      if (r.status === 401){ sair(); throw new Error('expirou'); }
-      return r.json();
-    }).then(j => {
+      headers:{'apikey':SUPA_KEY, 'Authorization':'Bearer ' + SUPA_KEY}
+    }).then(r => r.json()).then(j => {
       dados = Array.isArray(j) ? j : [];
       render();
     }).catch(e => {
@@ -156,11 +123,6 @@
       }
     });
   };
-  function sair(){
-    token=''; sessionStorage.removeItem('tokenPainel');
-    $('painel').style.display='none'; $('telaLogin').style.display='block';
-  }
-
   /* ---------- montar textos prontos ---------- */
   function resumoFrete(r){
     if (r.faz_entrega !== 'Sim') return 'Não faz entrega';
@@ -309,12 +271,7 @@
 
   $('busca').addEventListener('input', render);
 
-  /* sessão anterior ainda válida? */
-  if (token){
-    $('telaLogin').style.display='none';
-    $('painel').style.display='block';
-    carregar();
-  }
+  carregar();
 })();
 </script>
 </body>
