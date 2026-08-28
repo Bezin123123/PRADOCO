@@ -1,72 +1,341 @@
 <!DOCTYPE html>
-<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Respostas — Planejamento | Prado & Co</title>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Respostas — Planejamento | Prado &amp; Co</title>
 <style>
-:root{--tinta:#12211f;--papel:#FBFAF7;--verde:#0F766E;--verde-claro:#E3F0EE;--traco:#DCD9D2;--apagado:#6B7773}
-*{box-sizing:border-box}body{margin:0;background:var(--papel);color:var(--tinta);font-family:Inter,"Segoe UI",sans-serif}
-.wrap{max-width:900px;margin:0 auto;padding:24px 18px 80px}
-h1{font-family:Georgia,serif;font-size:26px;margin:0 0 4px}
+:root{--tinta:#12211f;--papel:#FBFAF7;--verde:#0F766E;--verde-claro:#E3F0EE;--verde-borda:#B9D8D3;
+      --traco:#DCD9D2;--apagado:#6B7773;--destaque:#FDF6E3;--destaque-borda:#EBD9A8}
+*{box-sizing:border-box}
+body{margin:0;background:var(--papel);color:var(--tinta);font-family:Inter,"Segoe UI",-apple-system,sans-serif;font-size:16px;line-height:1.5}
+.wrap{max-width:960px;margin:0 auto;padding:26px 18px 80px}
+h1{font-family:Georgia,serif;font-size:27px;margin:0 0 4px}
 .sub{color:var(--apagado);font-size:14px;margin:0 0 20px}
+
+.barra{display:flex;gap:10px;align-items:center;margin-bottom:18px;flex-wrap:wrap}
+.cont{font-size:14px;color:var(--apagado);margin-right:auto}
+button{font:inherit;font-size:14.5px;font-weight:650;padding:9px 15px;border-radius:7px;cursor:pointer;
+       border:1px solid var(--verde);background:var(--verde);color:#fff}
+button.ghost{background:#fff;color:var(--verde)}
+button:hover{opacity:.9}
+select{font:inherit;font-size:14.5px;padding:9px 12px;border:1px solid var(--traco);border-radius:7px;background:#fff}
+
+.card{background:#fff;border:1px solid var(--traco);border-radius:10px;padding:18px;margin-bottom:14px}
+.card .topo{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin:0 0 12px}
+.card h3{margin:0;font-size:18px;flex:1}
+.card .quando{font-size:12.5px;color:var(--apagado)}
+.linha{font-size:14.5px;margin:7px 0;white-space:pre-wrap}
+.rot{font-weight:650;color:var(--verde);display:block;font-size:12px;letter-spacing:.05em;text-transform:uppercase;margin-bottom:1px}
+
+.selo{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:3px 9px;border-radius:20px;
+      color:#B8860B;background:var(--destaque);border:1px solid var(--destaque-borda)}
+.selo.call{color:var(--verde);background:var(--verde-claro);border-color:var(--verde-borda)}
+
+.miniaturas{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 0}
+.miniaturas a{display:block;width:88px;height:88px;border-radius:7px;overflow:hidden;border:1px solid var(--traco);background:#F4F2ED;
+              text-decoration:none;color:var(--apagado);font-size:11px;display:flex;align-items:center;justify-content:center;text-align:center;padding:6px}
+.miniaturas img{width:100%;height:100%;object-fit:cover;display:block}
+.miniaturas a:hover{border-color:var(--verde)}
+
+.acoes-card{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 0;padding-top:13px;border-top:1px solid var(--traco)}
+.vazio{text-align:center;color:var(--apagado);padding:50px;background:#fff;border:1px solid var(--traco);border-radius:10px}
+
+/* ---- modal do banco ---- */
+.fundo{position:fixed;inset:0;background:rgba(18,33,31,.55);display:none;align-items:flex-start;justify-content:center;
+       padding:34px 16px;overflow:auto;z-index:50}
+.fundo.aberto{display:flex}
+.modal{background:var(--papel);border-radius:12px;max-width:900px;width:100%;padding:22px}
+.modal .cabeca{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin:0 0 4px}
+.modal h2{font-family:Georgia,serif;font-size:22px;margin:0;flex:1}
+.modal .fechar{border:0;background:transparent;color:var(--apagado);font-size:26px;line-height:1;padding:0 4px;cursor:pointer}
+.modal .fechar:hover{color:var(--tinta)}
+.pasta{margin:20px 0 0}
+.pasta .titulo{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--verde);margin:0 0 9px;display:block}
+.grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px}
+.grade a{display:flex;align-items:center;justify-content:center;text-align:center;padding:8px;
+         aspect-ratio:1;border-radius:8px;overflow:hidden;border:1px solid var(--traco);background:#fff;
+         text-decoration:none;color:var(--apagado);font-size:11.5px;word-break:break-word}
+.grade img{width:100%;height:100%;object-fit:cover;display:block}
+.grade a:hover{border-color:var(--verde)}
 .trava{max-width:340px;margin:80px auto;text-align:center}
 .trava input{width:100%;padding:12px;font-size:15px;border:1px solid var(--traco);border-radius:8px;margin:12px 0}
-button{font:inherit;font-size:15px;font-weight:650;padding:11px 18px;border-radius:8px;cursor:pointer;border:1px solid var(--verde);background:var(--verde);color:#fff}
-.barra{display:flex;gap:10px;align-items:center;margin-bottom:16px;flex-wrap:wrap}
-.cont{font-size:14px;color:var(--apagado);margin-right:auto}
-.card{background:#fff;border:1px solid var(--traco);border-radius:10px;padding:16px;margin-bottom:12px}
-.card h3{margin:0 0 8px;font-size:17px}
-.card .linha{font-size:14px;margin:4px 0;white-space:pre-wrap}
-.card .rot{font-weight:650;color:var(--verde)}
-.vazio{text-align:center;color:var(--apagado);padding:50px}
 #painel{display:none}
-</style></head><body>
+@media(max-width:600px){.barra{flex-direction:column;align-items:stretch}.cont{margin:0 0 4px}}
+</style>
+</head>
+<body>
 <div class="wrap">
+
   <div class="trava" id="trava">
     <h1>Respostas</h1>
     <p class="sub">Área da Prado</p>
     <input type="password" id="senha" placeholder="Senha" onkeydown="if(event.key==='Enter')entrar()">
     <button onclick="entrar()">Entrar</button>
   </div>
+
   <div id="painel">
     <h1>Respostas do planejamento</h1>
     <p class="sub">Farmácias que preencheram · atualiza ao abrir</p>
+
     <div class="barra">
-      <span class="cont" id="cont">Carregando...</span>
-      <button onclick="carregar()">Atualizar</button>
-      <button onclick="exportar()">Exportar tudo</button>
+      <span class="cont" id="cont">carregando…</span>
+      <select id="filtroMes" onchange="render()">
+        <option value="">Todos os meses</option>
+      </select>
+      <button class="ghost" onclick="carregar()">Atualizar</button>
+      <button class="ghost" onclick="verAgenda()">Minha agenda</button>
+      <button onclick="exportar(event)">Exportar tudo</button>
     </div>
-    <div id="lista"></div>
+
+    <div id="lista"><div class="vazio">Carregando…</div></div>
   </div>
+
+  <div class="fundo" id="fundo" onclick="if(event.target===this)fecharBanco()">
+    <div class="modal">
+      <div class="cabeca">
+        <h2 id="bancoTitulo">Banco de imagens</h2>
+        <button class="ghost" onclick="copiarBanco(event)">Copiar todos os links</button>
+        <button class="fechar" onclick="fecharBanco()" title="Fechar">&times;</button>
+      </div>
+      <p class="sub" id="bancoSub">Tudo que essa farmácia já enviou.</p>
+      <div id="bancoConteudo"><div class="vazio">Carregando…</div></div>
+    </div>
+  </div>
+
 </div>
+
 <script>
-const SUPA_URL="https://avitrcjknuphgdgzlmen.supabase.co";
-const SUPA_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF2aXRyY2prbnVwaGdkZ3psbWVuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI0NjI4MjEsImV4cCI6MjA5ODAzODgyMX0.R7GLAiNMXv76mpti8_Ftwr6DqL3JbLUiwC74PmPFNBw";
-const SENHA="prado2026";
-let dados=[];
-function entrar(){if(document.getElementById('senha').value===SENHA){document.getElementById('trava').style.display='none';document.getElementById('painel').style.display='block';carregar()}else alert('Senha errada')}
+const SUPA_URL = "https://avitrcjknuphgdgzlmen.supabase.co";
+const SUPA_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF2aXRyY2prbnVwaGdkZ3psbWVuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI0NjI4MjEsImV4cCI6MjA5ODAzODgyMX0.R7GLAiNMXv76mpti8_Ftwr6DqL3JbLUiwC74PmPFNBw";
+const SENHA = "prado2026";
+let dados = [];
+
+function entrar(){
+  if (document.getElementById('senha').value === SENHA){
+    document.getElementById('trava').style.display='none';
+    document.getElementById('painel').style.display='block';
+    carregar();
+  } else alert('Senha errada');
+}
+
 function carregar(){
-  fetch(SUPA_URL+'/rest/v1/planejamento_farmacia?select=*&order=criado_em.desc',{headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY}})
-  .then(r=>r.json()).then(d=>{dados=d;render()}).catch(_=>{document.getElementById('cont').textContent='Erro ao carregar'});
+  fetch(SUPA_URL+'/rest/v1/planejamento_farmacia?select=*&order=criado_em.desc',
+        {headers:{apikey:SUPA_KEY, Authorization:'Bearer '+SUPA_KEY}})
+    .then(r=>r.json())
+    .then(d=>{
+      dados = Array.isArray(d) ? d : [];
+      const meses = [...new Set(dados.map(x=>x.mes_ref).filter(Boolean))];
+      const sel = document.getElementById('filtroMes');
+      sel.innerHTML = '<option value="">Todos os meses</option>' +
+        meses.map(m=>'<option value="'+m+'">'+m+'</option>').join('');
+      if (meses.indexOf('setembro/2026') > -1) sel.value = 'setembro/2026';
+      render();
+    })
+    .catch(()=>{ document.getElementById('cont').textContent = 'Erro ao carregar'; });
 }
-function campo(rot,val){return val&&val.trim()?'<div class="linha"><span class="rot">'+rot+':</span>\n'+val+'</div>':''}
+
+function esc(s){
+  return String(s==null?'':s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+}
+function campo(rot, val){
+  return (val && String(val).trim())
+    ? '<div class="linha"><span class="rot">'+esc(rot)+'</span>'+esc(val)+'</div>' : '';
+}
+function ehImagem(u){ return /\.(jpe?g|png|webp|gif|heic)(\?|$)/i.test(u); }
+
+function galeria(rot, blob){
+  if (!blob || !blob.trim()) return '';
+  const urls = blob.split('\n').map(u=>u.trim()).filter(Boolean);
+  if (!urls.length) return '';
+  const itens = urls.map(u=>{
+    const nome = decodeURIComponent(u.split('/').pop()).slice(0,28);
+    return ehImagem(u)
+      ? '<a href="'+esc(u)+'" target="_blank" rel="noopener"><img src="'+esc(u)+'" loading="lazy" alt=""></a>'
+      : '<a href="'+esc(u)+'" target="_blank" rel="noopener">'+esc(nome)+'</a>';
+  }).join('');
+  return '<div class="linha"><span class="rot">'+esc(rot)+' ('+urls.length+')</span>'+
+         '<div class="miniaturas">'+itens+'</div></div>';
+}
+
+function filtrados(){
+  const m = document.getElementById('filtroMes').value;
+  return m ? dados.filter(d=>d.mes_ref === m) : dados;
+}
+
 function render(){
-  document.getElementById('cont').textContent=dados.length+' farmácia(s) responderam';
-  const L=document.getElementById('lista');
-  if(!dados.length){L.innerHTML='<div class="vazio">Ninguém preencheu ainda.</div>';return}
-  L.innerHTML=dados.map(d=>'<div class="card"><h3>'+(d.farmacia||'(sem nome)')+'</h3>'+
-    campo('Produtos do mês',d.produtos_mes)+campo('Dia dos Pais',d.dia_dos_pais)+
-    campo('Condição DP',d.dia_pais_condicao)+campo('Ação do mês',d.acao_mes)+
-    campo('Ideia',d.ideia)+campo('Vende bem',d.vende_bem)+
-    campo('Grupo de Ofertas',d.nome_grupo)+campo('WhatsApp',d.whatsapp)+campo('Endereço',d.endereco)+
-    '</div>').join('');
+  const d = filtrados();
+  document.getElementById('cont').textContent = d.length + ' farmácia(s) responderam';
+  const L = document.getElementById('lista');
+  if (!d.length){ L.innerHTML = '<div class="vazio">Ninguém preencheu ainda.</div>'; return; }
+
+  L.innerHTML = d.map((x,i)=>{
+    const quando = x.criado_em
+      ? new Date(x.criado_em).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit',timeZone:'America/Sao_Paulo'})
+      : '';
+    const selos = (x.datas ? '<span class="selo">'+esc(x.datas.split(';').length)+' data(s)</span> ' : '') +
+                  (x.call_agendada ? '<span class="selo call">reunião marcada</span>' : '');
+    return '<div class="card">'+
+      '<div class="topo"><h3>'+esc(x.farmacia||'(sem nome)')+'</h3>'+selos+
+      '<span class="quando">'+esc(quando)+'</span></div>'+
+      galeria('Ofertas enviadas', x.ofertas_arquivos)+
+      campo('Ofertas digitadas', x.ofertas_texto)+
+      campo('Datas de setembro', x.datas)+
+      campo('Ação na loja', x.acoes_loja)+
+      galeria('Material da loja', x.material_arquivos)+
+      (x.material_ja_enviado ? '<div class="linha"><span class="rot">Material</span>Cliente diz que já enviou antes.</div>' : '')+
+      campo('Quem grava', x.quem_grava)+
+      campo('Funcionamento 07/09', x.funcionamento_feriado)+
+      campo('Vende bem', x.vende_bem)+
+      campo('Reunião de Resultados', x.call_agendada)+
+      campo('Grupo / Linktree', x.ja_tem_grupo === 'nao' ? 'Falta montar' : (x.ja_tem_grupo === 'sim' ? 'Já tem os dois' : ''))+
+      campo('Nome do grupo', x.nome_grupo)+
+      campo('WhatsApp', x.whatsapp)+
+      campo('Endereço', x.endereco)+
+      campo('Observação', x.observacao)+
+      '<div class="acoes-card">'+
+        '<button onclick="abrirBanco('+i+')">Banco de imagens</button>'+
+        '<button class="ghost" onclick="copiarBriefing('+i+',event)">Copiar briefing</button>'+
+        '<button class="ghost" onclick="copiarDesign('+i+',event)">Copiar pros designers</button>'+
+      '</div>'+
+    '</div>';
+  }).join('');
 }
-function exportar(){
-  const t=dados.map(d=>['=== '+(d.farmacia||'?')+' ===',
-    d.produtos_mes?'PRODUTOS: '+d.produtos_mes:'',d.dia_dos_pais?'DIA DOS PAIS: '+d.dia_dos_pais:'',
-    d.dia_pais_condicao?'CONDIÇÃO: '+d.dia_pais_condicao:'',d.acao_mes?'AÇÃO: '+d.acao_mes:'',
-    d.ideia?'IDEIA: '+d.ideia:'',d.vende_bem?'VENDE BEM: '+d.vende_bem:'',
-    d.nome_grupo?'GRUPO: '+d.nome_grupo:'',d.whatsapp?'WHATS: '+d.whatsapp:'',d.endereco?'END: '+d.endereco:''
-  ].filter(x=>x).join('\n')).join('\n\n');
-  if(navigator.clipboard)navigator.clipboard.writeText(t);
-  event.target.textContent='Copiado ✓';setTimeout(()=>event.target.textContent='Exportar tudo',2000);
+
+function copiar(texto, alvo, rotulo){
+  const original = alvo.textContent;
+  const ok = ()=>{ alvo.textContent='Copiado ✓'; setTimeout(()=>alvo.textContent=original, 2000); };
+  if (navigator.clipboard) navigator.clipboard.writeText(texto).then(ok).catch(()=>alert(texto));
+  else alert(texto);
 }
-</script></body></html>
+
+function copiarBriefing(i, ev){
+  const x = filtrados()[i];
+  copiar(x.resumo || montar(x), ev.target);
+}
+
+function montar(x){
+  const L = ['PLANEJAMENTO — ' + (x.farmacia||'?')];
+  [['Ofertas', x.ofertas_texto],['Arquivos de oferta', x.ofertas_arquivos],
+   ['Datas', x.datas],['Ação', x.acoes_loja],['Material', x.material_arquivos],
+   ['Quem grava', x.quem_grava],['Feriado 07/09', x.funcionamento_feriado],
+   ['Vende bem', x.vende_bem],['Reunião', x.call_agendada],['Observação', x.observacao]]
+   .forEach(d=>{ if(d[1]) L.push(d[0]+': '+d[1]); });
+  return L.join('\n');
+}
+
+function copiarDesign(i, ev){
+  const x = filtrados()[i];
+  const L = ['MATERIAL — ' + (x.farmacia||'?')];
+  if (x.datas) L.push('Datas do mês: ' + x.datas);
+  if (x.ofertas_arquivos){ L.push(''); L.push('Encarte / tabela de ofertas:'); L.push(x.ofertas_arquivos); }
+  if (x.ofertas_texto){ L.push(''); L.push('Produtos digitados:'); L.push(x.ofertas_texto); }
+  if (x.material_arquivos){ L.push(''); L.push('Fotos da loja e logo:'); L.push(x.material_arquivos); }
+  if (x.material_ja_enviado) L.push('(Cliente diz que já mandou material antes — procurar no grupo.)');
+  if (x.endereco){ L.push(''); L.push('Endereço: ' + x.endereco); }
+  if (x.whatsapp) L.push('WhatsApp: ' + x.whatsapp);
+  copiar(L.join('\n'), ev.target);
+}
+
+function exportar(ev){
+  copiar(filtrados().map(x=> x.resumo || montar(x)).join('\n\n———\n\n'), ev.target);
+}
+
+/* ---------- banco de imagens (lê o Storage direto) ---------- */
+const BUCKET = 'planejamento';
+let bancoLinks = [];
+
+function slugFarmacia(nome){
+  return String(nome||'sem-nome').normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/[^a-zA-Z0-9._-]/g,'-').replace(/-+/g,'-').toLowerCase()
+    .replace(/\.+/g,'-').slice(0,50);
+}
+
+function listar(prefix){
+  return fetch(SUPA_URL+'/storage/v1/object/list/'+BUCKET, {
+    method:'POST',
+    headers:{'Content-Type':'application/json', apikey:SUPA_KEY, Authorization:'Bearer '+SUPA_KEY},
+    body: JSON.stringify({prefix: prefix, limit: 100, offset: 0, sortBy:{column:'name', order:'asc'}})
+  }).then(r=>r.json()).then(x=>Array.isArray(x)?x:[]);
+}
+
+// desce até 3 níveis: farmacia/mes/tipo/arquivo
+function varrer(prefix, nivel){
+  return listar(prefix).then(itens=>{
+    const arquivos = itens.filter(i=>i.id).map(i=>prefix + i.name);
+    const pastas   = itens.filter(i=>!i.id);
+    if (nivel >= 3 || !pastas.length) return arquivos;
+    return Promise.all(pastas.map(p=>varrer(prefix + p.name + '/', nivel+1)))
+      .then(res=>arquivos.concat(...res));
+  });
+}
+
+function abrirBanco(i){
+  const x = filtrados()[i];
+  const nome = x.farmacia || 'sem-nome';
+  document.getElementById('bancoTitulo').textContent = nome;
+  document.getElementById('bancoSub').textContent = 'Tudo que essa farmácia já enviou.';
+  document.getElementById('bancoConteudo').innerHTML = '<div class="vazio">Carregando…</div>';
+  document.getElementById('fundo').classList.add('aberto');
+  bancoLinks = [];
+
+  varrer(slugFarmacia(nome) + '/', 1).then(caminhos=>{
+    if (!caminhos.length){
+      document.getElementById('bancoConteudo').innerHTML =
+        '<div class="vazio">Essa farmácia ainda não enviou nenhum arquivo.</div>';
+      return;
+    }
+    const grupos = {};
+    caminhos.forEach(c=>{
+      const partes = c.split('/');
+      const chave = partes.slice(1, partes.length-1).join(' · ') || 'geral';
+      const url = SUPA_URL + '/storage/v1/object/public/' + BUCKET + '/' +
+                  c.split('/').map(encodeURIComponent).join('/');
+      (grupos[chave] = grupos[chave] || []).push({url: url, nome: partes[partes.length-1]});
+      bancoLinks.push(url);
+    });
+
+    document.getElementById('bancoSub').textContent =
+      caminhos.length + ' arquivo(s) no total.';
+
+    document.getElementById('bancoConteudo').innerHTML =
+      Object.keys(grupos).sort().reverse().map(g=>
+        '<div class="pasta"><span class="titulo">'+esc(g)+'</span><div class="grade">'+
+        grupos[g].map(a=> ehImagem(a.url)
+          ? '<a href="'+esc(a.url)+'" target="_blank" rel="noopener"><img src="'+esc(a.url)+'" loading="lazy" alt=""></a>'
+          : '<a href="'+esc(a.url)+'" target="_blank" rel="noopener">'+esc(decodeURIComponent(a.nome).slice(0,34))+'</a>'
+        ).join('')+
+        '</div></div>'
+      ).join('');
+  }).catch(()=>{
+    document.getElementById('bancoConteudo').innerHTML =
+      '<div class="vazio">Não consegui ler os arquivos agora.</div>';
+  });
+}
+
+function fecharBanco(){ document.getElementById('fundo').classList.remove('aberto'); }
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') fecharBanco(); });
+
+function copiarBanco(ev){
+  if (!bancoLinks.length){ alert('Nenhum arquivo pra copiar.'); return; }
+  copiar(document.getElementById('bancoTitulo').textContent + '\n\n' + bancoLinks.join('\n'), ev.target);
+}
+
+function verAgenda(){
+  fetch(SUPA_URL+'/rest/v1/agenda_slots?ocupado=eq.true&order=inicio.asc&select=inicio,farmacia,contato',
+        {headers:{apikey:SUPA_KEY, Authorization:'Bearer '+SUPA_KEY}})
+    .then(r=>r.json())
+    .then(s=>{
+      if (!Array.isArray(s) || !s.length){ alert('Nenhuma reunião marcada ainda.'); return; }
+      const t = s.map(x=>{
+        const q = new Date(x.inicio).toLocaleString('pt-BR',
+          {weekday:'short',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit',timeZone:'America/Sao_Paulo'});
+        return q + ' — ' + (x.farmacia||'?') + (x.contato ? ' (' + x.contato + ')' : '');
+      }).join('\n');
+      alert('SUAS REUNIÕES\n\n' + t);
+    })
+    .catch(()=>alert('Não consegui carregar a agenda.'));
+}
+</script>
+</body>
+</html>
